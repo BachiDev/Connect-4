@@ -1,103 +1,182 @@
-import Image from "next/image";
+
+'use client';
+
+import GameBoard from './components/GameBoard';
+import { useGame } from './hooks/useGame'; // Added comment to trigger re-evaluation
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const game = useGame();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600">
+      <h1 className="text-4xl font-bold text-white mb-8">4 in a Row</h1>
+      <div className="mb-4 flex space-x-4">
+        <button
+          onClick={() => {
+            game.setVsComputer(false);
+            game.setStartingPlayer('1');
+            game.resetGame();
+          }}
+          className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+            !game.vsComputer
+              ? "bg-white text-indigo-600"
+              : "bg-gray-300 text-gray-700"
+          }`}
+        >
+          Player vs Player
+        </button>
+        <button
+          onClick={() => {
+            game.setVsComputer(true);
+            game.setStartingPlayer('1');
+            game.resetGame();
+          }}
+          className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+            game.vsComputer
+              ? "bg-white text-indigo-600"
+              : "bg-gray-300 text-gray-700"
+          }`}
+        >
+          Player vs Computer
+        </button>
+      </div>
+      {game.vsComputer && (
+        <div className="mb-4 flex space-x-4">
+          <button
+            onClick={() => {
+              game.setDifficulty('normal');
+              game.resetGame();
+            }}
+            className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+              game.difficulty === 'normal'
+                ? "bg-white text-indigo-600"
+                : "bg-gray-300 text-gray-700"
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Normal
+          </button>
+          <button
+            onClick={() => {
+              game.setDifficulty('strong');
+              game.resetGame();
+            }}
+            className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+              game.difficulty === 'strong'
+                ? "bg-white text-indigo-600"
+                : "bg-gray-300 text-gray-700"
+            }`}
           >
-            Read our docs
-          </a>
+            Strong
+          </button>
+          <div className="ml-4 border-l-2 border-gray-300 pl-4 flex space-x-4">
+            <button
+              onClick={() => game.setStartingPlayer('1')}
+              className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex items-center ${
+                game.chosenStartingPlayer === '1'
+                  ? "bg-white text-indigo-600"
+                  : "bg-gray-300 text-gray-700"
+              }`}
+            >
+              First
+              <div className="w-6 h-6 rounded-full border-2 border-white ml-2 bg-red-500"></div>
+            </button>
+            <button
+              onClick={() => game.setStartingPlayer('2')}
+              className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex items-center ${
+                game.chosenStartingPlayer === '2'
+                  ? "bg-white text-indigo-600"
+                  : "bg-gray-300 text-gray-700"
+              }`}
+            >
+              Second
+              <div className="w-6 h-6 rounded-full border-2 border-white ml-2 bg-yellow-500"></div>
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      )}
+      <div className="text-white text-2xl mb-4 h-8">
+        {!game.winner && !game.draw && (
+          <div className="flex items-center">
+            {game.vsComputer ? (
+              game.currentPlayer === game.chosenStartingPlayer ? (
+                <div className="flex items-center">
+                  Your Turn:
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 border-white ml-2 ${game.playerColors[game.currentPlayer]}`}
+                  ></div>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  Computer's Turn:
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 border-white ml-2 ${game.playerColors[game.currentPlayer]}`}
+                  ></div>
+                </div>
+              )
+            ) : (
+              <div className="flex items-center">
+                Current Player:
+                <div
+                  className={`w-6 h-6 rounded-full border-2 border-white ml-2 ${game.playerColors[game.currentPlayer]}`}
+                ></div>
+              </div>
+            )}
+          </div>
+        )}
+        {game.winner && (
+          <div className="flex items-center">
+            {game.vsComputer ? (
+              game.winner === game.chosenStartingPlayer ? (
+                <div className="flex items-center">
+                  You win!
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 border-white ml-2 ${game.playerColors[game.winner]}`}
+                  ></div>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  Computer wins!
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 border-white ml-2 ${game.playerColors[game.winner]}`}
+                  ></div>
+                </div>
+              )
+            ) : (
+              <div className="flex items-center">
+                Player
+                <div
+                  className={`w-6 h-6 rounded-full border-2 border-white mx-2 ${game.playerColors[game.winner]}`}
+                ></div>
+                wins!
+              </div>
+            )}
+          </div>
+        )}
+        {game.draw && `It's a draw!`}
+      </div>
+      <GameBoard game={game} winningPieces={game.winningPieces} disabled={game.vsComputer && game.playerChoicePending} />
+      <button
+        onClick={() => game.resetGame()}
+        className="mt-8 px-4 py-2 bg-white text-indigo-600 rounded-lg font-bold cursor-pointer"
+      >
+        New Game
+      </button>
+      <div className="mt-4 flex space-x-4">
+        <button
+          onClick={game.undo}
+          className="px-4 py-2 bg-white text-indigo-600 rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          disabled={!!game.winner || game.draw || game.historyIndex === 0}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          Undo
+        </button>
+        <button
+          onClick={game.redo}
+          className="px-4 py-2 bg-white text-indigo-600 rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          disabled={!!game.winner || game.draw || game.historyIndex === game.history.length - 1}
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+          Redo
+        </button>
+      </div>
+    </main>
+    );
 }
