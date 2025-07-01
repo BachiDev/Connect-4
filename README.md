@@ -18,7 +18,7 @@ This is a web-based implementation of the classic "Connect 4" game, built with N
 
 ### Undo/Redo Functionality
 
-*   Players can undo their last move and redo a previously undone move. This is implemented by maintaining a `history` array of board states within the `useGame` React hook. Each valid move adds a new board state to the history, allowing for seamless navigation through past turns.
+*   Players can undo their last move and redo a previously undone move. When playing against the computer, a single undo/redo action will revert/reapply both the player's move and the computer's subsequent move, effectively undoing/redoing a full round of play. This is implemented by maintaining a `history` array of board states within the `useGame` React hook. Each valid move adds a new board state to the history, allowing for seamless navigation through past turns.
 
 ### Responsive Design
 

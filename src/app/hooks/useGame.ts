@@ -359,9 +359,17 @@ export const useGame = () => {
 
   const undo = () => {
     if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1);
-      setBoard(history[historyIndex - 1]);
-      setCurrentPlayer(prev => (prev === '1' ? '2' : '1'));
+      let newHistoryIndex = historyIndex - 1;
+      let newCurrentPlayer = currentPlayer === '1' ? '2' : '1';
+
+      if (vsComputer && historyIndex > 1) {
+        newHistoryIndex = historyIndex - 2;
+        newCurrentPlayer = currentPlayer; // Player's turn again after undoing computer's and player's move
+      }
+
+      setHistoryIndex(newHistoryIndex);
+      setBoard(history[newHistoryIndex]);
+      setCurrentPlayer(newCurrentPlayer);
       setWinner(null);
       setDraw(false);
       setWinningPieces([]);
@@ -370,9 +378,17 @@ export const useGame = () => {
 
   const redo = () => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1);
-      setBoard(history[historyIndex + 1]);
-      setCurrentPlayer(prev => (prev === '1' ? '2' : '1'));
+      let newHistoryIndex = historyIndex + 1;
+      let newCurrentPlayer = currentPlayer === '1' ? '2' : '1';
+
+      if (vsComputer && historyIndex < history.length - 2) {
+        newHistoryIndex = historyIndex + 2;
+        newCurrentPlayer = currentPlayer; // Player's turn again after redoing player's and computer's move
+      }
+
+      setHistoryIndex(newHistoryIndex);
+      setBoard(history[newHistoryIndex]);
+      setCurrentPlayer(newCurrentPlayer);
       setWinner(null);
       setDraw(false);
       setWinningPieces([]);
