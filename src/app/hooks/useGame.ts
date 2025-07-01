@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export type Player = '1' | '2';
 export type Board = (Player | null)[][];
@@ -20,10 +20,9 @@ export const useGame = () => {
     '1': 'bg-red-500',
     '2': 'bg-yellow-500',
   });
-  const [isComputerTurn, setIsComputerTurn] = useState<boolean>(false);
 
   // Helper function to check for a win for a given player on a given board
-  const checkWin = (currentBoard: Board, player: Player): boolean => {
+  const checkWin = useCallback((currentBoard: Board, player: Player): boolean => {
     // Check horizontal
     for (let row = 0; row < 6; row++) {
       for (let col = 0; col < 4; col++) {
@@ -64,10 +63,10 @@ export const useGame = () => {
       }
     }
     return false;
-  };
+  }, []);
 
   // Function to evaluate the board for the AI
-  const evaluateBoard = (board: Board, player: Player): number => {
+  const evaluateBoard = useCallback((board: Board, player: Player): number => {
     let score = 0;
     const opponent: Player = player === '1' ? '2' : '1';
 
@@ -124,10 +123,10 @@ export const useGame = () => {
     }
 
     return score;
-  };
+  }, []);
 
   // Function to check for winner and winning pieces (used by useEffect and minimax)
-  const checkWinner = (currentBoard: Board): { winner: Player | null; winningPieces: [number, number][]; draw: boolean } => {
+  const checkWinner = useCallback((currentBoard: Board): { winner: Player | null; winningPieces: [number, number][]; draw: boolean } => {
     let currentWinner: Player | null = null;
     let currentWinningPieces: [number, number][] = [];
     let currentDraw: boolean = false;
@@ -186,10 +185,10 @@ export const useGame = () => {
       currentDraw = true;
     }
     return { winner: currentWinner, winningPieces: currentWinningPieces, draw: currentDraw };
-  };
+  }, []);
 
   // Minimax algorithm for strong AI
-  const minimax = (board: Board, depth: number, alpha: number, beta: number, isMaximizingPlayer: boolean, player: Player): number => {
+  const minimax = useCallback((board: Board, depth: number, alpha: number, beta: number, isMaximizingPlayer: boolean, player: Player): number => {
     const opponent: Player = player === '1' ? '2' : '1';
     const gameStatus = checkWinner(board);
 
@@ -240,11 +239,10 @@ export const useGame = () => {
       }
       return minScore;
     }
-  };
+  }, [checkWinner, evaluateBoard]);
 
   // Function to find the best move for the AI
-  const findBestMove = (currentBoard: Board, player: Player, difficulty: 'normal' | 'strong'): number | null => {
-    console.log('findBestMove called with:', { currentBoard, player, difficulty });
+  const findBestMove = useCallback((currentBoard: Board, player: Player, difficulty: 'normal' | 'strong'): number | null => {
     if (difficulty === 'normal') {
       // Existing normal AI logic (prioritize winning, blocking, then random)
       // Check for winning move
@@ -313,10 +311,9 @@ export const useGame = () => {
       }
       return bestMove;
     }
-  };
+  }, [checkWin, minimax]);
 
-  const dropPiece = (col: number) => {
-    console.log('dropPiece called with col:', col);
+  const dropPiece = useCallback((col: number) => {
     if (winner || draw) return;
 
     const newBoard = board.map(row => [...row]);
@@ -331,7 +328,7 @@ export const useGame = () => {
         break;
       }
     }
-  };
+  }, [board, winner, draw, currentPlayer, history, historyIndex]);
 
   const resetGame = () => {
     setBoard(initialBoard);
@@ -343,7 +340,6 @@ export const useGame = () => {
   };
 
   const setStartingPlayer = (player: Player) => {
-    console.log('setStartingPlayer called with:', player);
     setChosenStartingPlayer(player);
     if (player === '1') { // Human wants to be Player 1 (red)
       setPlayerColors({
@@ -388,23 +384,19 @@ export const useGame = () => {
     setWinner(gameStatus.winner);
     setWinningPieces(gameStatus.winningPieces);
     setDraw(gameStatus.draw);
-
-    console.log('useEffect running:', { vsComputer, currentPlayer, chosenStartingPlayer, winner, draw });
-
+    
     if (vsComputer && !gameStatus.winner && !gameStatus.draw) {
       const humanPlayerId = chosenStartingPlayer;
       const computerPlayerId = humanPlayerId === '1' ? '2' : '1';
 
       if (currentPlayer === computerPlayerId) {
-        console.log('Computers turn detected:', { currentPlayer, computerPlayerId });
         const computerMove = findBestMove(board, computerPlayerId, difficulty);
         if (computerMove !== null) {
-          console.log('Computer move found:', computerMove);
           setTimeout(() => dropPiece(computerMove), 500);
         }
       }
     }
-  }, [board, winner, draw, currentPlayer, vsComputer, difficulty, chosenStartingPlayer]);
+  }, [board, winner, draw, currentPlayer, vsComputer, difficulty, chosenStartingPlayer, dropPiece, findBestMove, checkWinner]);
 
   return { board, currentPlayer, winner, draw, winningPieces, dropPiece, resetGame, undo, redo, history, historyIndex, vsComputer, setVsComputer, difficulty, setDifficulty, setStartingPlayer, chosenStartingPlayer, playerColors };
 };

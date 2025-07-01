@@ -2,7 +2,7 @@
 'use client';
 
 import GameBoard from './components/GameBoard';
-import { useGame } from './hooks/useGame'; // Added comment to trigger re-evaluation
+import { useGame } from './hooks/useGame';
 
 export default function Home() {
   const game = useGame();
@@ -107,7 +107,7 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="flex items-center">
-                  Computer's Turn:
+                  Computer&apos;s Turn:
                   <div
                     className={`w-6 h-6 rounded-full border-2 border-white ml-2 ${game.playerColors[game.currentPlayer]}`}
                   ></div>
@@ -154,7 +154,7 @@ export default function Home() {
         )}
         {game.draw && `It's a draw!`}
       </div>
-      <GameBoard game={game} winningPieces={game.winningPieces} disabled={game.vsComputer && game.playerChoicePending} />
+      <GameBoard game={game} winningPieces={game.winningPieces} />
       <button
         onClick={() => game.resetGame()}
         className="mt-8 px-4 py-2 bg-white text-indigo-600 rounded-lg font-bold cursor-pointer"
