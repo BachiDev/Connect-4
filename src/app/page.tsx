@@ -8,9 +8,9 @@ export default function Home() {
   const game = useGame();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600">
-      <h1 className="text-4xl font-bold text-white mb-8">Connect 4</h1>
-      <div className="mb-4 flex space-x-4">
+    <main className="flex flex-col items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600 py-8 overflow-y-auto">
+      <h1 className="text-4xl font-bold text-white mb-8 pt-8">Connect 4</h1>
+      <div className="mb-4 flex flex-wrap justify-center gap-4">
         <button
           onClick={() => {
             game.setVsComputer(false);
@@ -41,34 +41,36 @@ export default function Home() {
         </button>
       </div>
       {game.vsComputer && (
-        <div className="mb-4 flex space-x-4">
-          <button
-            onClick={() => {
-              game.setDifficulty('normal');
-              game.resetGame();
-            }}
-            className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
-              game.difficulty === 'normal'
-                ? "bg-white text-indigo-600"
-                : "bg-gray-300 text-gray-700"
-            }`}
-          >
-            Normal
-          </button>
-          <button
-            onClick={() => {
-              game.setDifficulty('strong');
-              game.resetGame();
-            }}
-            className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
-              game.difficulty === 'strong'
-                ? "bg-white text-indigo-600"
-                : "bg-gray-300 text-gray-700"
-            }`}
-          >
-            Strong
-          </button>
-          <div className="ml-4 border-l-2 border-gray-300 pl-4 flex space-x-4">
+        <>
+          <div className="mb-4 flex flex-wrap justify-center gap-4">
+            <button
+              onClick={() => {
+                game.setDifficulty('normal');
+                game.resetGame();
+              }}
+              className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+                game.difficulty === 'normal'
+                  ? "bg-white text-indigo-600"
+                  : "bg-gray-300 text-gray-700"
+              }`}
+            >
+              Normal
+            </button>
+            <button
+              onClick={() => {
+                game.setDifficulty('strong');
+                game.resetGame();
+              }}
+              className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+                game.difficulty === 'strong'
+                  ? "bg-white text-indigo-600"
+                  : "bg-gray-300 text-gray-700"
+              }`}
+            >
+              Strong
+            </button>
+          </div>
+          <div className="mb-4 flex flex-wrap justify-center gap-4">
             <button
               onClick={() => game.setStartingPlayer('1')}
               className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex items-center ${
@@ -92,7 +94,7 @@ export default function Home() {
               <div className="w-6 h-6 rounded-full border-2 border-white ml-2 bg-yellow-500"></div>
             </button>
           </div>
-        </div>
+        </>
       )}
       <div className="text-white text-2xl mb-4 h-8">
         {!game.winner && !game.draw && (
