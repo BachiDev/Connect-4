@@ -1,5 +1,5 @@
 import React from 'react';
-import { Player } from '../hooks/useGame';
+import { Player } from '../hooks/types';
 
 interface GameStatusDisplayProps {
   winner: Player | null;

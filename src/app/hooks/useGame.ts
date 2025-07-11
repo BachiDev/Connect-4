@@ -1,317 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
-
-export type Player = '1' | '2';
-export type Board = (Player | null)[][];
+import { Player, Board } from './types';
+import { checkWinner, findBestMove } from './gameLogic';
+import { useGameHistory } from './useGameHistory';
+import { useGameSettings } from './useGameSettings';
 
 const initialBoard: Board = Array(6).fill(null).map(() => Array(7).fill(null));
 
 export const useGame = () => {
-  const [history, setHistory] = useState<Board[]>([initialBoard]);
-  const [historyIndex, setHistoryIndex] = useState<number>(0);
   const [board, setBoard] = useState<Board>(initialBoard);
   const [currentPlayer, setCurrentPlayer] = useState<Player>('1');
   const [winner, setWinner] = useState<Player | null>(null);
   const [winningPieces, setWinningPieces] = useState<[number, number][]>([]);
   const [draw, setDraw] = useState<boolean>(false);
-  const [vsComputer, setVsComputer] = useState<boolean>(false);
-  const [difficulty, setDifficulty] = useState<'normal' | 'strong'>('normal');
-  const [chosenStartingPlayer, setChosenStartingPlayer] = useState<Player>('1');
-  const [playerColors, setPlayerColors] = useState<Record<Player, string>>({
-    '1': 'bg-red-500',
-    '2': 'bg-yellow-500',
-  });
 
-  // Helper function to check for a win for a given player on a given board
-  const checkWin = useCallback((currentBoard: Board, player: Player): boolean => {
-    // Check horizontal
-    for (let row = 0; row < 6; row++) {
-      for (let col = 0; col < 4; col++) {
-        const slice = currentBoard[row].slice(col, col + 4);
-        if (slice.every(cell => cell === player)) {
-          return true;
-        }
-      }
-    }
-
-    // Check vertical
-    for (let col = 0; col < 7; col++) {
-      for (let row = 0; row < 3; row++) {
-        const slice = [currentBoard[row][col], currentBoard[row + 1][col], currentBoard[row + 2][col], currentBoard[row + 3][col]];
-        if (slice.every(cell => cell === player)) {
-          return true;
-        }
-      }
-    }
-
-    // Check diagonal (down-right)
-    for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 4; col++) {
-        const slice = [currentBoard[row][col], currentBoard[row + 1][col + 1], currentBoard[row + 2][col + 2], currentBoard[row + 3][col + 3]];
-        if (slice.every(cell => cell === player)) {
-          return true;
-        }
-      }
-    }
-
-    // Check diagonal (up-right)
-    for (let row = 3; row < 6; row++) {
-      for (let col = 0; col < 4; col++) {
-        const slice = [currentBoard[row][col], currentBoard[row - 1][col + 1], currentBoard[row - 2][col + 2], currentBoard[row - 3][col + 3]];
-        if (slice.every(cell => cell === player)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }, []);
-
-  // Function to evaluate the board for the AI
-  const evaluateBoard = useCallback((board: Board, player: Player): number => {
-    let score = 0;
-    const opponent: Player = player === '1' ? '2' : '1';
-
-    // Simple heuristic: count 2-in-a-row and 3-in-a-row for player and opponent
-    // This is a very basic evaluation function and can be improved significantly
-    const checkLine = (line: (Player | null)[], currentPlayer: Player) => {
-      let currentScore = 0;
-      let playerCount = 0;
-      let opponentCount = 0;
-      let emptyCount = 0;
-
-      for (const cell of line) {
-        if (cell === currentPlayer) {
-          playerCount++;
-        } else if (cell === opponent) {
-          opponentCount++;
-        } else {
-          emptyCount++;
-        }
-      }
-
-      if (playerCount === 3 && emptyCount === 1) currentScore += 10;
-      if (playerCount === 2 && emptyCount === 2) currentScore += 2;
-      if (opponentCount === 3 && emptyCount === 1) currentScore -= 10; // Block opponent
-      return currentScore;
-    };
-
-    // Evaluate horizontal
-    for (let r = 0; r < 6; r++) {
-      for (let c = 0; c < 4; c++) {
-        score += checkLine(board[r].slice(c, c + 4), player);
-      }
-    }
-
-    // Evaluate vertical
-    for (let c = 0; c < 7; c++) {
-      for (let r = 0; r < 3; r++) {
-        score += checkLine([board[r][c], board[r + 1][c], board[r + 2][c], board[r + 3][c]], player);
-      }
-    }
-
-    // Evaluate diagonal (down-right)
-    for (let r = 0; r < 3; r++) {
-      for (let c = 0; c < 4; c++) {
-        score += checkLine([board[r][c], board[r + 1][c + 1], board[r + 2][c + 2], board[r + 3][c + 3]], player);
-      }
-    }
-
-    // Evaluate diagonal (up-right)
-    for (let r = 3; r < 6; r++) {
-      for (let c = 0; c < 4; c++) {
-        score += checkLine([board[r][c], board[r - 1][c + 1], board[r - 2][c + 2], board[r - 3][c + 3]], player);
-      }
-    }
-
-    return score;
-  }, []);
-
-  // Function to check for winner and winning pieces (used by useEffect and minimax)
-  const checkWinner = useCallback((currentBoard: Board): { winner: Player | null; winningPieces: [number, number][]; draw: boolean } => {
-    let currentWinner: Player | null = null;
-    let currentWinningPieces: [number, number][] = [];
-    let currentDraw: boolean = false;
-
-    // Check horizontal
-    for (let row = 0; row < 6; row++) {
-      for (let col = 0; col < 4; col++) {
-        const slice = currentBoard[row].slice(col, col + 4);
-        if (slice.every(cell => cell && cell === slice[0])) {
-          currentWinner = slice[0];
-          currentWinningPieces = slice.map((_, index) => [row, col + index]);
-          return { winner: currentWinner, winningPieces: currentWinningPieces, draw: currentDraw };
-        }
-      }
-    }
-
-    // Check vertical
-    for (let col = 0; col < 7; col++) {
-      for (let row = 0; row < 3; row++) {
-        const slice = [currentBoard[row][col], currentBoard[row + 1][col], currentBoard[row + 2][col], currentBoard[row + 3][col]];
-        if (slice.every(cell => cell && cell === slice[0])) {
-          currentWinner = slice[0];
-          currentWinningPieces = slice.map((_, index) => [row + index, col]);
-          return { winner: currentWinner, winningPieces: currentWinningPieces, draw: currentDraw };
-        }
-      }
-    }
-
-    // Check diagonal (down-right)
-    for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 4; col++) {
-        const slice = [currentBoard[row][col], currentBoard[row + 1][col + 1], currentBoard[row + 2][col + 2], currentBoard[row + 3][col + 3]];
-        if (slice.every(cell => cell && cell === slice[0])) {
-          currentWinner = slice[0];
-          currentWinningPieces = slice.map((_, index) => [row + index, col + index]);
-          return { winner: currentWinner, winningPieces: currentWinningPieces, draw: currentDraw };
-        }
-      }
-    }
-
-    // Check diagonal (up-right)
-    for (let row = 3; row < 6; row++) {
-      for (let col = 0; col < 4; col++) {
-        const slice = [currentBoard[row][col], currentBoard[row - 1][col + 1], currentBoard[row - 2][col + 2], currentBoard[row - 3][col + 3]];
-        if (slice.every(cell => cell && cell === slice[0])) {
-          currentWinner = slice[0];
-          currentWinningPieces = slice.map((_, index) => [row - index, col + index]);
-          return { winner: currentWinner, winningPieces: currentWinningPieces, draw: currentDraw };
-        }
-      }
-    }
-
-    // Check for draw
-    const isBoardFull = currentBoard.every(row => row.every(cell => cell !== null));
-    if (isBoardFull && !currentWinner) {
-      currentDraw = true;
-    }
-    return { winner: currentWinner, winningPieces: currentWinningPieces, draw: currentDraw };
-  }, []);
-
-  // Minimax algorithm for strong AI
-  const minimax = useCallback((board: Board, depth: number, alpha: number, beta: number, isMaximizingPlayer: boolean, player: Player): number => {
-    const opponent: Player = player === '1' ? '2' : '1';
-    const gameStatus = checkWinner(board);
-
-    if (gameStatus.winner === player) return 100000000000000 - depth; // Prioritize faster wins
-    if (gameStatus.winner === opponent) return -10000000000000 + depth; // Penalize slower losses
-    if (gameStatus.draw) return 0;
-    if (depth === 0) return evaluateBoard(board, player);
-
-    if (isMaximizingPlayer) {
-      let maxScore = -Infinity;
-      for (let col = 0; col < 7; col++) {
-        const newBoard = board.map(row => [...row]);
-        let rowToDrop = -1;
-        for (let row = 5; row >= 0; row--) {
-          if (!newBoard[row][col]) {
-            newBoard[row][col] = player;
-            rowToDrop = row;
-            break;
-          }
-        }
-
-        if (rowToDrop !== -1) {
-          const score = minimax(newBoard, depth - 1, alpha, beta, false, player);
-          maxScore = Math.max(maxScore, score);
-          alpha = Math.max(alpha, score);
-          if (beta <= alpha) break;
-        }
-      }
-      return maxScore;
-    } else {
-      let minScore = Infinity;
-      for (let col = 0; col < 7; col++) {
-        const newBoard = board.map(row => [...row]);
-        let rowToDrop = -1;
-        for (let row = 5; row >= 0; row--) {
-          if (!newBoard[row][col]) {
-            newBoard[row][col] = opponent;
-            rowToDrop = row;
-            break;
-          }
-        }
-        if (rowToDrop !== -1) {
-          const score = minimax(newBoard, depth - 1, alpha, beta, true, player);
-          minScore = Math.min(minScore, score);
-          beta = Math.min(beta, score);
-          if (beta <= alpha) break;
-        }
-      }
-      return minScore;
-    }
-  }, [checkWinner, evaluateBoard]);
-
-  // Function to find the best move for the AI
-  const findBestMove = useCallback((currentBoard: Board, player: Player, difficulty: 'normal' | 'strong'): number | null => {
-    if (difficulty === 'normal') {
-      // Existing normal AI logic (prioritize winning, blocking, then random)
-      // Check for winning move
-      for (let col = 0; col < 7; col++) {
-        const newBoard = currentBoard.map(row => [...row]);
-        for (let row = 5; row >= 0; row--) {
-          if (!newBoard[row][col]) {
-            newBoard[row][col] = player;
-            if (checkWin(newBoard, player)) {
-              return col;
-            }
-            break;
-          }
-        }
-      }
-
-      // Check for blocking move
-      const opponent: Player = player === '1' ? '2' : '1';
-      for (let col = 0; col < 7; col++) {
-        const newBoard = currentBoard.map(row => [...row]);
-        for (let row = 5; row >= 0; row--) {
-          if (!newBoard[row][col]) {
-            newBoard[row][col] = opponent;
-            if (checkWin(newBoard, opponent)) {
-              return col;
-            }
-            break;
-          }
-        }
-      }
-
-      // Random valid move
-      const validCols: number[] = [];
-      for (let col = 0; col < 7; col++) {
-        if (!currentBoard[0][col]) {
-          validCols.push(col);
-        }
-      }
-      if (validCols.length > 0) {
-        return validCols[Math.floor(Math.random() * validCols.length)];
-      }
-      return null;
-    } else { // Strong difficulty
-      const MAX_DEPTH = 3; // Adjust this for difficulty
-      let bestScore = -Infinity;
-      let bestMove: number | null = null;
-
-      for (let col = 0; col < 7; col++) {
-        const newBoard = currentBoard.map(row => [...row]);
-        let rowToDrop = -1;
-        for (let row = 5; row >= 0; row--) {
-          if (!newBoard[row][col]) {
-            newBoard[row][col] = player;
-            rowToDrop = row;
-            break;
-          }
-        }
-
-        if (rowToDrop !== -1) {
-          const score = minimax(newBoard, MAX_DEPTH, -Infinity, Infinity, false, player);
-          if (score > bestScore) {
-            bestScore = score;
-            bestMove = col;
-          }
-        }
-      }
-      return bestMove;
-    }
-  }, [checkWin, minimax]);
+  const { vsComputer, setVsComputer, difficulty, setDifficulty, chosenStartingPlayer, playerColors, setStartingPlayer } = useGameSettings();
+  const { history, historyIndex, undo: historyUndo, redo: historyRedo, addHistory, resetHistory } = useGameHistory(initialBoard, vsComputer, currentPlayer);
 
   const dropPiece = useCallback((col: number) => {
     if (winner || draw) return;
@@ -320,81 +23,44 @@ export const useGame = () => {
     for (let row = 5; row >= 0; row--) {
       if (!newBoard[row][col]) {
         newBoard[row][col] = currentPlayer;
-        const newHistory = history.slice(0, historyIndex + 1);
-        setHistory([...newHistory, newBoard]);
-        setHistoryIndex(newHistory.length);
+        addHistory(newBoard);
         setBoard(newBoard);
-        setCurrentPlayer(currentPlayer === '1' ? '2' : '1');
+        setCurrentPlayer(currentPlayer === '1' ? '2' as Player : '1' as Player);
         break;
       }
     }
-  }, [board, winner, draw, currentPlayer, history, historyIndex]);
+  }, [board, winner, draw, currentPlayer, addHistory]);
 
-  const resetGame = () => {
+  const resetGame = useCallback(() => {
     setBoard(initialBoard);
     setWinner(null);
     setWinningPieces([]);
     setDraw(false);
-    setHistory([initialBoard]);
-    setHistoryIndex(0);
-    setCurrentPlayer('1'); // Always reset to Player 1 at the start of a new game
-  };
+    resetHistory();
+    setCurrentPlayer('1' as Player); // Always reset to Player 1 at the start of a new game
+  }, [resetHistory]);
 
-  const setStartingPlayer = (player: Player) => {
-    setChosenStartingPlayer(player as Player);
-    if (player === '1') { // Human wants to be Player 1 (red)
-      setPlayerColors({
-        '1': 'bg-red-500',
-        '2': 'bg-yellow-500',
-      });
-      setCurrentPlayer('1'); // Player 1 (human) goes first
-    } else { // Human wants to be Player 2 (yellow)
-      setPlayerColors({
-        '1': 'bg-red-500',    // Computer is Player 1, so computer is red
-        '2': 'bg-yellow-500', // Human is Player 2, so human is yellow
-      });
-      setCurrentPlayer('1'); // Computer (Player 1) goes first
-    }
-    resetGame();
-  };
-
-  const undo = () => {
-    if (historyIndex > 0) {
-      let newHistoryIndex = historyIndex - 1;
-      let newCurrentPlayer = currentPlayer === '1' ? '2' : '1';
-
-      if (vsComputer && historyIndex > 1) {
-        newHistoryIndex = historyIndex - 2;
-        newCurrentPlayer = currentPlayer; // Player's turn again after undoing computer's and player's move
-      }
-
-      setHistoryIndex(newHistoryIndex);
-      setBoard(history[newHistoryIndex]);
-      setCurrentPlayer(newCurrentPlayer as Player);
+  const undo = useCallback(() => {
+    const result = historyUndo();
+    if (result) {
+      setBoard(result.newBoard);
+      setCurrentPlayer(result.newCurrentPlayer);
       setWinner(null);
       setDraw(false);
       setWinningPieces([]);
     }
-  };
+  }, [historyUndo]);
 
-  const redo = () => {
-    if (historyIndex < history.length - 1) {
-      let newHistoryIndex = historyIndex + 1;
-      let newCurrentPlayer = currentPlayer === '1' ? '2' : '1';
-
-      if (vsComputer && historyIndex < history.length - 2) {
-        newHistoryIndex = historyIndex + 2;
-        newCurrentPlayer = currentPlayer; // Player's turn again after redoing player's and computer's move
-      }
-
-      setHistoryIndex(newHistoryIndex);
-      setBoard(history[newHistoryIndex]);
-      setCurrentPlayer(newCurrentPlayer as Player);
+  const redo = useCallback(() => {
+    const result = historyRedo();
+    if (result) {
+      setBoard(result.newBoard);
+      setCurrentPlayer(result.newCurrentPlayer);
       setWinner(null);
       setDraw(false);
       setWinningPieces([]);
     }
-  };
+  }, [historyRedo]);
 
   useEffect(() => {
     const gameStatus = checkWinner(board);
@@ -413,7 +79,7 @@ export const useGame = () => {
         }
       }
     }
-  }, [board, winner, draw, currentPlayer, vsComputer, difficulty, chosenStartingPlayer, dropPiece, findBestMove, checkWinner]);
+  }, [board, winner, draw, currentPlayer, vsComputer, difficulty, chosenStartingPlayer, dropPiece]);
 
   return { board, currentPlayer, winner, draw, winningPieces, dropPiece, resetGame, undo, redo, history, historyIndex, vsComputer, setVsComputer, difficulty, setDifficulty, setStartingPlayer, chosenStartingPlayer, playerColors };
 };
