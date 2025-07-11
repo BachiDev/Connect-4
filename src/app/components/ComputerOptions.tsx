@@ -24,7 +24,7 @@ const ComputerOptions: React.FC<ComputerOptionsProps> = ({
             setDifficulty('normal');
             resetGame();
           }}
-          className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+          className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex-grow ${
             difficulty === 'normal'
               ? "bg-white text-indigo-600"
               : "bg-gray-300 text-gray-700"
@@ -37,7 +37,7 @@ const ComputerOptions: React.FC<ComputerOptionsProps> = ({
             setDifficulty('strong');
             resetGame();
           }}
-          className={`px-4 py-2 rounded-lg font-bold cursor-pointer ${
+          className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex-grow ${
             difficulty === 'strong'
               ? "bg-white text-indigo-600"
               : "bg-gray-300 text-gray-700"
@@ -46,13 +46,13 @@ const ComputerOptions: React.FC<ComputerOptionsProps> = ({
           Strong
         </button>
       </div>
-      <div className="mb-4 flex flex-wrap justify-around gap-4">
+      <div className="flex flex-wrap justify-around gap-4">
         <button
               onClick={() => {
                 setStartingPlayer('1');
                 resetGame();
               }}
-              className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex items-center ${
+              className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex items-center flex-grow ${
                 chosenStartingPlayer === '1'
                   ? "bg-white text-indigo-600"
                   : "bg-gray-300 text-gray-700"
@@ -66,7 +66,7 @@ const ComputerOptions: React.FC<ComputerOptionsProps> = ({
                 setStartingPlayer('2');
                 resetGame();
               }}
-              className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex items-center ${
+              className={`px-4 py-2 rounded-lg font-bold cursor-pointer flex items-center flex-grow ${
                 chosenStartingPlayer === '2'
                   ? "bg-white text-indigo-600"
                   : "bg-gray-300 text-gray-700"

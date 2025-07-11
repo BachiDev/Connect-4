@@ -12,22 +12,26 @@ export default function Home() {
   const game = useGame();
 
   return (
-    <main className="flex flex-col items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600 py-8 overflow-y-auto">
-      <h1 className="text-4xl font-bold text-white mb-8 pt-8">Connect 4</h1>
+    <main className="flex flex-col items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600 py-8 px-4 overflow-y-auto">
+      <h1 className="text-4xl font-bold text-white mb-8 ">Connect 4</h1>
       <GameModeSelection
         vsComputer={game.vsComputer}
         setVsComputer={game.setVsComputer}
         setStartingPlayer={game.setStartingPlayer}
         resetGame={game.resetGame}
       />
+      <div className="w-full max-w-md mx-auto h-px bg-white my-4"></div>
       {game.vsComputer && (
-        <ComputerOptions
-          difficulty={game.difficulty}
-          setDifficulty={game.setDifficulty}
-          chosenStartingPlayer={game.chosenStartingPlayer}
-          setStartingPlayer={game.setStartingPlayer}
-          resetGame={game.resetGame}
-        />
+        <>
+          <ComputerOptions
+            difficulty={game.difficulty}
+            setDifficulty={game.setDifficulty}
+            chosenStartingPlayer={game.chosenStartingPlayer}
+            setStartingPlayer={game.setStartingPlayer}
+            resetGame={game.resetGame}
+          />
+          <div className="w-full max-w-md mx-auto h-px bg-white my-4"></div>
+        </>
       )}
       <GameStatusDisplay
         winner={game.winner}
