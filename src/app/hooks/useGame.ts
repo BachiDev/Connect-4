@@ -337,10 +337,11 @@ export const useGame = () => {
     setDraw(false);
     setHistory([initialBoard]);
     setHistoryIndex(0);
+    setCurrentPlayer('1'); // Always reset to Player 1 at the start of a new game
   };
 
   const setStartingPlayer = (player: Player) => {
-    setChosenStartingPlayer(player);
+    setChosenStartingPlayer(player as Player);
     if (player === '1') { // Human wants to be Player 1 (red)
       setPlayerColors({
         '1': 'bg-red-500',
@@ -369,7 +370,7 @@ export const useGame = () => {
 
       setHistoryIndex(newHistoryIndex);
       setBoard(history[newHistoryIndex]);
-      setCurrentPlayer(newCurrentPlayer);
+      setCurrentPlayer(newCurrentPlayer as Player);
       setWinner(null);
       setDraw(false);
       setWinningPieces([]);
@@ -388,7 +389,7 @@ export const useGame = () => {
 
       setHistoryIndex(newHistoryIndex);
       setBoard(history[newHistoryIndex]);
-      setCurrentPlayer(newCurrentPlayer);
+      setCurrentPlayer(newCurrentPlayer as Player);
       setWinner(null);
       setDraw(false);
       setWinningPieces([]);

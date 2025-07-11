@@ -1,4 +1,4 @@
-# 4 in a Row Game
+# Connect 4
 
 This is a web-based implementation of the classic "Connect 4" game, built with Next.js and React. It offers various features and a responsive design for an engaging user experience.
 

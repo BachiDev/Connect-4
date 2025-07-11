@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600">
-      <h1 className="text-4xl font-bold text-white mb-8">4 in a Row</h1>
+      <h1 className="text-4xl font-bold text-white mb-8">Connect 4</h1>
       <div className="mb-4 flex space-x-4">
         <button
           onClick={() => {
