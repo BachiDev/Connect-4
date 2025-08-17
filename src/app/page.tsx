@@ -7,6 +7,7 @@ import GameStatusDisplay from './components/GameStatusDisplay';
 import NewGameButton from './components/NewGameButton';
 import UndoRedoButtons from './components/UndoRedoButtons';
 import { useGame } from './hooks/useGame';
+import FloatingActionButton from './components/FloatingActionButton';
 
 export default function Home() {
   const game = useGame();
@@ -51,6 +52,7 @@ export default function Home() {
         historyIndex={game.historyIndex}
         historyLength={game.history.length}
       />
+      <FloatingActionButton href='https://github.com/BachiDev/Connect-4'/>
     </main>
     );
 }
