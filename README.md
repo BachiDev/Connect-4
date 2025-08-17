@@ -2,7 +2,7 @@
 
 This is a web-based implementation of the classic "Connect 4" game, built with Next.js and React.
 
-[Check Out Live](https://bachidev.github.io/connect-4/)
+[Check Out Live](https://bachidev.github.io/Connect-4/)
 
 ![alt text](image.png)
 
