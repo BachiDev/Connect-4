@@ -30,17 +30,17 @@ export default function StatsStrip({
 
   return (
     <Card className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
-      <p className="font-mono text-xs tracking-widest text-zinc-500 uppercase">Session</p>
+      <p className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Session</p>
       <p className="font-mono text-sm text-zinc-100" aria-live="polite">
         {line}
       </p>
       {vsComputer && (
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-zinc-400">
           {difficulty} AI · you play {humanFirst ? 'first' : 'second'}
         </p>
       )}
       {stats.bestWinMoves !== null && (
-        <p className="text-xs text-zinc-500">Best win: {stats.bestWinMoves} moves</p>
+        <p className="text-xs text-zinc-400">Best win: {stats.bestWinMoves} moves</p>
       )}
       <Button
         variant="ghost"

@@ -39,7 +39,7 @@ export default function GameOverDialog({
       <div className="flex flex-col items-center gap-2 text-center">
         <Trophy size={32} aria-hidden="true" className="text-violet-400" />
         <h2 className="text-2xl font-bold tracking-tight text-zinc-100">{title}</h2>
-        <p className="font-mono text-xs tracking-widest text-zinc-500 uppercase">
+        <p className="font-mono text-xs tracking-widest text-zinc-400 uppercase">
           {moves} moves{winner !== null && vsComputer ? ` · ${difficulty} AI` : ''}
         </p>
         <div className="mt-4 flex w-full flex-col gap-2">

@@ -45,7 +45,7 @@ export default function SegmentedControl<T extends string>({
               className={cn(
                 'inline-flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors sm:rounded-full',
                 active
-                  ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
+                  ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/25'
                   : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100'
               )}
             >

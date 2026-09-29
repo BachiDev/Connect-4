@@ -14,7 +14,7 @@ export default function SiteHeader() {
           <ArrowLeft size={16} aria-hidden="true" />
           All work
         </a>
-        <span className="font-mono text-xs tracking-widest text-zinc-500 uppercase">Connect-4</span>
+        <span className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Connect-4</span>
         <a
           href={LINKS.source}
           target="_blank"

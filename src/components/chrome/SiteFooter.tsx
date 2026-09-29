@@ -5,7 +5,7 @@ export default function SiteFooter() {
   return (
     <footer className="border-t border-white/10">
       <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-3 px-4 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-400">
           © {year} Fabian Bachmayer · Built with Next.js &amp; Tailwind
         </p>
         <div className="flex items-center gap-1 text-sm">
@@ -23,7 +23,7 @@ export default function SiteFooter() {
           >
             Source
           </a>
-          <span className="px-3 py-2 font-mono text-xs text-zinc-600 uppercase">No tracking</span>
+          <span className="px-3 py-2 font-mono text-xs text-zinc-400 uppercase">No tracking</span>
         </div>
       </div>
     </footer>

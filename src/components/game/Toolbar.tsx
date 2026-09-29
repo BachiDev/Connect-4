@@ -44,7 +44,7 @@ export default function Toolbar({
   return (
     <Card className="space-y-4 p-4">
       <div className="space-y-2">
-        <p className="font-mono text-xs tracking-widest text-zinc-500 uppercase">Mode</p>
+        <p className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Mode</p>
         <SegmentedControl<GameMode>
           label="Game mode"
           value={mode}
@@ -72,7 +72,7 @@ export default function Toolbar({
 
       {vsComputer && (
         <div className="space-y-2">
-          <p className="font-mono text-xs tracking-widest text-zinc-500 uppercase">Difficulty</p>
+          <p className="font-mono text-xs tracking-widest text-zinc-400 uppercase">Difficulty</p>
           <SegmentedControl<Difficulty>
             label="Difficulty"
             value={difficulty}
@@ -82,13 +82,13 @@ export default function Toolbar({
               { value: 'strong', label: 'Strong' },
             ]}
           />
-          <p className="text-sm text-zinc-500">{DIFFICULTY_HINTS[difficulty]}</p>
+          <p className="text-sm text-zinc-400">{DIFFICULTY_HINTS[difficulty]}</p>
         </div>
       )}
 
       {vsComputer && (
         <div className="space-y-2">
-          <p className="font-mono text-xs tracking-widest text-zinc-500 uppercase">You play</p>
+          <p className="font-mono text-xs tracking-widest text-zinc-400 uppercase">You play</p>
           <SegmentedControl<Player>
             label="Your seat"
             value={seat}
