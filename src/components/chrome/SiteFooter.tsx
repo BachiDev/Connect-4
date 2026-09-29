@@ -23,7 +23,6 @@ export default function SiteFooter() {
           >
             Source
           </a>
-          <span className="px-3 py-2 font-mono text-xs text-zinc-400 uppercase">No tracking</span>
         </div>
       </div>
     </footer>

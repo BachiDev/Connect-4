@@ -1,4 +1,4 @@
-import { Bot, ShieldCheck, Undo2, Users } from 'lucide-react';
+import { Bot, Undo2, Users } from 'lucide-react';
 import { HERO } from '@/data/meta';
 import Pill from '@/components/ui/Pill';
 import GameIsland from '@/components/game/GameIsland';
@@ -16,7 +16,6 @@ export default function Home() {
           <Pill icon={<Users size={14} aria-hidden="true" />}>2-player local</Pill>
           <Pill icon={<Bot size={14} aria-hidden="true" />}>Minimax AI</Pill>
           <Pill icon={<Undo2 size={14} aria-hidden="true" />}>Undo / Redo</Pill>
-          <Pill icon={<ShieldCheck size={14} aria-hidden="true" />}>No tracking</Pill>
         </div>
       </section>
 

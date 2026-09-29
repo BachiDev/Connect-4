@@ -7,7 +7,7 @@ export const LINKS = {
 } as const;
 
 export const HERO = {
-  kicker: 'Portfolio demo · No backend · No tracking',
+  kicker: 'Portfolio demo',
   title: 'Connect-4',
   lede: 'Local two-player or versus a minimax AI — with undo/redo.',
 } as const;

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 const SITE_URL = 'https://bachi.dev/Connect-4';
 const TITLE = 'Connect-4 · Fabian Bachmayer';
 const DESCRIPTION =
-  'Play Connect-4 locally with a friend or against a minimax AI. Full undo/redo, keyboard play, no tracking.';
+  'Play Connect-4 locally with a friend or against a minimax AI. Full undo/redo and keyboard play.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
