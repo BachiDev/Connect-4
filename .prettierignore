@@ -6,3 +6,6 @@ package-lock.json
 .github/
 public/
 *.min.js
+# Generated in CI by actions/configure-pages (basePath injection).
+# Not in the repo, but prettier --check . in the Quality gates step sees it.
+next.config.js
