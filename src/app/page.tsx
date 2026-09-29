@@ -1,58 +1,26 @@
-'use client';
-
-import GameBoard from './components/GameBoard';
-import GameModeSelection from './components/GameModeSelection';
-import ComputerOptions from './components/ComputerOptions';
-import GameStatusDisplay from './components/GameStatusDisplay';
-import NewGameButton from './components/NewGameButton';
-import UndoRedoButtons from './components/UndoRedoButtons';
-import { useGame } from './hooks/useGame';
-import FloatingActionButton from './components/FloatingActionButton';
+import { Bot, ShieldCheck, Undo2, Users } from 'lucide-react';
+import { HERO } from '@/data/meta';
+import Pill from '@/components/ui/Pill';
+import GameIsland from '@/components/game/GameIsland';
 
 export default function Home() {
-  const game = useGame();
-
   return (
-    <main className="flex flex-col items-center justify-center bg-gradient-to-br from-purple-400 to-indigo-600 py-8 px-4 overflow-y-auto">
-      <h1 className="text-4xl font-bold text-white mb-8 ">Connect 4</h1>
-      <GameModeSelection
-        vsComputer={game.vsComputer}
-        setVsComputer={game.setVsComputer}
-        setStartingPlayer={game.setStartingPlayer}
-        resetGame={game.resetGame}
-      />
-      <div className="w-full max-w-md mx-auto h-px bg-white my-4"></div>
-      {game.vsComputer && (
-        <>
-          <ComputerOptions
-            difficulty={game.difficulty}
-            setDifficulty={game.setDifficulty}
-            chosenStartingPlayer={game.chosenStartingPlayer}
-            setStartingPlayer={game.setStartingPlayer}
-            resetGame={game.resetGame}
-          />
-          <div className="w-full max-w-md mx-auto h-px bg-white my-4"></div>
-        </>
-      )}
-      <GameStatusDisplay
-        winner={game.winner}
-        draw={game.draw}
-        vsComputer={game.vsComputer}
-        currentPlayer={game.currentPlayer}
-        chosenStartingPlayer={game.chosenStartingPlayer}
-        playerColors={game.playerColors}
-      />
-      <GameBoard game={game} winningPieces={game.winningPieces} />
-      <NewGameButton resetGame={game.resetGame} />
-      <UndoRedoButtons
-        undo={game.undo}
-        redo={game.redo}
-        winner={game.winner}
-        draw={game.draw}
-        historyIndex={game.historyIndex}
-        historyLength={game.history.length}
-      />
-      <FloatingActionButton href='https://github.com/BachiDev/Connect-4'/>
-    </main>
-    );
+    <div className="mx-auto w-full max-w-4xl px-4 pt-6 pb-12 md:pt-8">
+      <section className="pb-5">
+        <p className="font-mono text-xs tracking-widest text-violet-400 uppercase">{HERO.kicker}</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-zinc-100 md:text-4xl">
+          {HERO.title}
+        </h1>
+        <p className="mt-2 max-w-xl text-base leading-relaxed text-zinc-400">{HERO.lede}</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Pill icon={<Users size={14} aria-hidden="true" />}>2-player local</Pill>
+          <Pill icon={<Bot size={14} aria-hidden="true" />}>Minimax AI</Pill>
+          <Pill icon={<Undo2 size={14} aria-hidden="true" />}>Undo / Redo</Pill>
+          <Pill icon={<ShieldCheck size={14} aria-hidden="true" />}>No tracking</Pill>
+        </div>
+      </section>
+
+      <GameIsland />
+    </div>
+  );
 }

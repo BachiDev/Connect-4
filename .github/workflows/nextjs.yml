@@ -73,6 +73,12 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+      - name: Quality gates
+        run: |
+          ${{ steps.detect-package-manager.outputs.runner }} tsc --noEmit
+          ${{ steps.detect-package-manager.outputs.runner }} eslint .
+          ${{ steps.detect-package-manager.outputs.runner }} prettier --check .
+          ${{ steps.detect-package-manager.outputs.runner }} vitest run
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact

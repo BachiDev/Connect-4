@@ -1,48 +1,72 @@
-# Connect 4
+# Connect-4
 
-This is a web-based implementation of the classic "Connect 4" game, built with Next.js and React.
+A polished, accessible Connect-4 demo — play locally with a friend or face a
+minimax AI. Part of [Fabian Bachmayer's portfolio](https://bachi.dev/work).
 
-[Check Out Live](https://bachidev.github.io/Connect-4/)
+**[Play live](https://bachi.dev/Connect-4/)**
 
-![alt text](image.png)
+## Features
 
-## Features & Technical Insights
+- **Two modes:** local two-player, or vs computer (First/red or Second/yellow).
+- **Two difficulties:** Normal (takes wins, blocks threats, then improvises) and
+  Strong (alpha-beta minimax, depth 4 — computed in a Web Worker, never blocks
+  the UI).
+- **Full undo/redo**, including full-round steps vs the computer, and undo after
+  game over.
+- **Accessible board:** real column buttons, arrow-key navigation, ghost preview
+  on hover and keyboard focus, screen-reader announcements, reduced-motion
+  support, 5+ run highlights.
+- **Session stats** in `localStorage` only — no cookies, no tracking.
+- **Mid-game guard:** changing mode/difficulty/seat asks before discarding the
+  live game.
 
-### Game Modes
+## Tech & architecture
 
-*   **Player vs Player:** Enjoy a local two-player experience on the same device.
-*   **Player vs Computer:** Challenge yourself against an AI opponent.
+Next.js 15 + React 19 + TypeScript + Tailwind v4, statically exported to GitHub
+Pages (branch `master`). Server shell + one client island (`GameIsland`).
 
-### Difficulty Levels (for Player vs Computer)
+```
+src/
+  app/            # layout (fonts, metadata, JSON-LD), page (server shell),
+                  # icon, robots, sitemap, manifest
+  components/
+    chrome/       # SiteHeader (links back to bachi.dev/work), SiteFooter
+    game/         # GameIsland, Toolbar, StatusBanner, Board, dialogs, stats
+    ui/           # Button, SegmentedControl, Card, Pill, Dialog
+  lib/            # connect4 (rules), ai (minimax), ai.worker, history, stats, cn
+  data/           # meta.ts (copy deck + links)
+  hooks/          # useGame (orchestrator), useGameSettings
+__tests__/        # 54 tests: rules, AI, history, worker protocol, stats
+scripts/          # generate-og-cover.mjs (link-preview image)
+```
 
-*   **Normal:** A basic AI that prioritizes winning moves, blocks immediate threats, and otherwise makes random valid moves.
-*   **Strong:** This difficulty utilizes a simplified minimax algorithm with a limited search depth (currently 3 moves ahead). The AI evaluates potential moves by assigning scores based on immediate wins, blocking opportunities, and strategic board positions. While not a perfect, unbeatable AI (as Connect 4 is a solved game that can lead to a draw with perfect play), it provides a significantly more challenging opponent.
+## Getting started
 
-### Undo/Redo Functionality
+```bash
+npm install
+npm run dev      # http://localhost:3000
+```
 
-*   Players can undo their last move and redo a previously undone move. When playing against the computer, a single undo/redo action will revert/reapply both the player's move and the computer's subsequent move, effectively undoing/redoing a full round of play. This is implemented by maintaining a `history` array of board states within the `useGame` React hook. Each valid move adds a new board state to the history, allowing for seamless navigation through past turns.
+| Script          | What it does                                                              |
+| --------------- | ------------------------------------------------------------------------- |
+| `dev` / `build` | Start dev server / static production build                                |
+| `typecheck`     | `tsc --noEmit`                                                            |
+| `lint`          | ESLint (Next + jsx-a11y)                                                  |
+| `format`        | Prettier write (check with `format:check`)                                |
+| `test`          | Vitest suite                                                              |
+| `og-cover`      | Regenerate `public/og-cover.png` (needs no install — uses Next's `sharp`) |
 
-### Responsive Design
+CI runs typecheck + lint + format-check + tests before every Pages build
+(see `.github/workflows/nextjs.yml`).
 
-*   The game board, pieces, and control elements are designed to adapt gracefully to various screen sizes, from mobile devices to large desktop displays. This is achieved using responsive CSS units (like `vw` for viewport width) and Tailwind CSS utility classes, ensuring a consistent and enjoyable experience across different devices.
+## Deployment
 
-### Dynamic Player Colors
+Push to `master` → GitHub Actions builds (`output: 'export'`) and deploys to
+GitHub Pages at `https://bachi.dev/Connect-4/`. No environment
+variables, no backend.
 
-*   When playing against the computer, players can choose to go "First" (Red pieces) or "Second" (Yellow pieces). The game dynamically assigns colors to the human player and the computer opponent based on this choice. This is managed by a `playerColors` state in the `useGame` hook, which maps player IDs ('1' and '2') to their respective CSS color classes.
+## Privacy
 
-### Visual Feedback & User Experience
-
-*   **Current Turn Indicator:** Clear visual cues (text and colored circles) indicate whose turn it is.
-*   **Winning Line Highlight:** When a player wins, the four connected pieces forming the winning line are highlighted with a distinct animation.
-*   **Hover Effect:** When hovering over a column, a semi-transparent preview of the piece is shown, indicating where the piece will drop.
-*   **Clickable Cursors:** The mouse cursor changes to a pointer over clickable game cells and buttons, providing intuitive feedback.
-*   **Disabled Buttons:** Undo/Redo buttons are disabled when no actions are available, and game board interaction is disabled when the game has ended or when a player choice is pending.
-
-## Getting Started
-
-To run this project locally:
-
-1.  Clone the repository.
-2.  Install dependencies: `npm install`
-3.  Start the development server: `npm run dev`
-4.  Open your browser to `http://localhost:3000`
+No analytics, no cookies. Game state lives in memory; aggregate session stats
+live only in your browser's `localStorage` (`connect4:stats:v1`, resettable
+in-game).
